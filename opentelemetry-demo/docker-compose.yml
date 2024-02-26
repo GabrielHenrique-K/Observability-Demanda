@@ -1,7 +1,7 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
 
-version: '3.9'
+version: "3.9"
 x-default-logging: &logging
   driver: "json-file"
   options:
@@ -171,7 +171,7 @@ services:
       - CURRENCY_SERVICE_PORT
       - VERSION=${IMAGE_VERSION}
       - OTEL_EXPORTER_OTLP_ENDPOINT
-      - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES},service.name=currencyservice   # The C++ SDK does not support OTEL_SERVICE_NAME
+      - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES},service.name=currencyservice # The C++ SDK does not support OTEL_SERVICE_NAME
     depends_on:
       otelcol:
         condition: service_started
@@ -218,8 +218,8 @@ services:
           memory: 175M
     restart: unless-stopped
     ports:
-      - "${FEATURE_FLAG_SERVICE_PORT}"                                  # Feature Flag Service UI
-      - "${FEATURE_FLAG_GRPC_SERVICE_PORT}"                             # Feature Flag Service gRPC API
+      - "${FEATURE_FLAG_SERVICE_PORT}" # Feature Flag Service UI
+      - "${FEATURE_FLAG_GRPC_SERVICE_PORT}" # Feature Flag Service gRPC API
     environment:
       - FEATURE_FLAG_SERVICE_PORT
       - FEATURE_FLAG_GRPC_SERVICE_PORT
@@ -228,7 +228,15 @@ services:
       - OTEL_SERVICE_NAME=featureflagservice
       - DATABASE_URL=ecto://ffs:ffs@ffspostgres:5432/ffs
     healthcheck:
-      test: ["CMD", "curl", "-H", "baggage: synthetic_request=true", "-f", "http://localhost:${FEATURE_FLAG_SERVICE_PORT}"]
+      test:
+        [
+          "CMD",
+          "curl",
+          "-H",
+          "baggage: synthetic_request=true",
+          "-f",
+          "http://localhost:${FEATURE_FLAG_SERVICE_PORT}",
+        ]
     depends_on:
       ffspostgres:
         condition: service_healthy
@@ -486,7 +494,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 500M               # This is high to enable supporting the recommendationCache feature flag use case
+          memory: 500M # This is high to enable supporting the recommendationCache feature flag use case
     restart: unless-stopped
     ports:
       - "${RECOMMENDATION_SERVICE_PORT}"
@@ -609,7 +617,6 @@ services:
       - "${REDIS_PORT}"
     logging: *logging
 
-
   # ********************
   # Telemetry Components
   # ********************
@@ -629,7 +636,7 @@ services:
           memory: 300M
     restart: unless-stopped
     ports:
-      - "${JAEGER_SERVICE_PORT}"         # Jaeger UI
+      - "${JAEGER_SERVICE_PORT}" # Jaeger UI
       - "${OTEL_COLLECTOR_PORT_GRPC}"
     environment:
       - METRICS_STORAGE_TYPE=prometheus
@@ -662,7 +669,11 @@ services:
         limits:
           memory: 125M
     restart: unless-stopped
-    command: [ "--config=/etc/otelcol-config.yml", "--config=/etc/otelcol-config-extras.yml" ]
+    command:
+      [
+        "--config=/etc/otelcol-config.yml",
+        "--config=/etc/otelcol-config-extras.yml",
+      ]
     volumes:
       - ./src/otelcollector/otelcol-config.yml:/etc/otelcol-config.yml
       - ./src/otelcollector/otelcol-config-extras.yml:/etc/otelcol-config-extras.yml
@@ -754,9 +765,6 @@ services:
   integrationTests:
     image: ${IMAGE_NAME}:${IMAGE_VERSION}-integrationTests
     container_name: integrationsTeste
-    if: ${IMAGE_VERSION} == mongoDB || ${IMAGE_VERSION}
-    then:
-      - .../.../home/vincenzo_amendola/user/mnt/kali/lib
     profiles:
       - tests
     build:
@@ -849,7 +857,7 @@ services:
     container_name: tracetest-server
     profiles:
       - tests
-      - odd          # Observabilty-Driven Development (ODD)
+      - odd # Observabilty-Driven Development (ODD)
     volumes:
       - type: bind
         source: ./test/tracetesting/tracetest-config.yaml
@@ -868,7 +876,7 @@ services:
       otelcol:
         condition: service_started
     healthcheck:
-      test: [ "CMD", "wget", "--spider", "localhost:11633" ]
+      test: ["CMD", "wget", "--spider", "localhost:11633"]
       interval: 1s
       timeout: 3s
       retries: 60
@@ -878,7 +886,7 @@ services:
     container_name: tracetest-postgres
     profiles:
       - tests
-      - odd          # Observabilty-Driven Development (ODD)
+      - odd # Observabilty-Driven Development (ODD)
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
